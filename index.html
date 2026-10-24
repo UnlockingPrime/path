@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Path</title>
+<meta name="description" content="Daily notes, my placement path and career options, in one place.">
+<meta name="theme-color" content="#FFF4E6">
+<meta name="color-scheme" content="light">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="My Path">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+  :root {
+    --text: #2b2540;
+    --muted: #7a6f8f;
+    --faint: #b9b0c9;
+    --surface: #ffffff;
+    --line: #efe7f7;
+    --violet: #7950f2;
+    --pink: #f06595;
+    --warn: #e8590c;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    background: #fff8f0 linear-gradient(160deg, #fff4e6 0%, #fdf0ff 45%, #e6fcf5 100%) fixed;
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  .wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: calc(40px + env(safe-area-inset-top)) 16px calc(64px + env(safe-area-inset-bottom));
+  }
+
+  textarea, input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+    resize: none;
+  }
+  textarea { overflow: hidden; display: block; }
+  ::placeholder { color: var(--faint); }
+  button {
+    font: inherit;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+  }
+  button:hover { color: var(--violet); }
+
+  /* Goal */
+  .goal-card {
+    background: linear-gradient(135deg, #ffd8a8 0%, #fcc2d7 50%, #d0bfff 100%);
+    border-radius: 20px;
+    padding: 20px 22px;
+    box-shadow: 0 10px 30px rgba(240, 101, 149, .18);
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #6b3a5c;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .goal { font-size: 24px; font-weight: 700; line-height: 1.3; letter-spacing: -.01em; color: #3b1f4a; }
+  .stats { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+  .pill b { font-weight: 700; }
+  .p-day { background: #fff0db; color: #d9480f; }
+  .p-streak { background: #ffe3ee; color: #a61e4d; }
+  .p-written { background: #e3f9e5; color: #2b8a3e; }
+
+  /* Tabs */
+  nav {
+    display: flex;
+    gap: 6px;
+    margin: 28px 0 24px;
+    padding: 5px;
+    background: rgba(255, 255, 255, .7);
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(121, 80, 242, .08);
+  }
+  nav button {
+    flex: 1;
+    padding: 8px 0;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: background .2s, color .2s;
+  }
+  nav button.active {
+    color: #fff;
+    background: linear-gradient(135deg, var(--violet), var(--pink));
+    box-shadow: 0 4px 12px rgba(121, 80, 242, .3);
+  }
+  section[hidden] { display: none; }
+
+  /* Notes */
+  .today {
+    background: var(--surface);
+    border: 2px solid #ffe066;
+    border-radius: 18px;
+    padding: 16px 18px;
+    box-shadow: 0 8px 24px rgba(252, 196, 25, .18);
+    transition: border-color .2s;
+  }
+  .today:focus-within { border-color: var(--violet); }
+  .today-label { font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; color: #e67700; }
+  .today-label span { color: var(--muted); font-weight: 500; }
+  #today { min-height: 160px; }
+  h2 {
+    font-size: 13px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--violet);
+    font-weight: 700;
+    margin: 40px 0 10px;
+  }
+  .day {
+    background: rgba(255, 255, 255, .75);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-left: 4px solid var(--c, var(--violet));
+  }
+  .day-head { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px; }
+  .day-head .date { font-weight: 700; color: var(--i, var(--text)); }
+  .day-head .num { color: var(--muted); }
+  .day.missed { background: rgba(255, 255, 255, .4); border-left-color: var(--faint); }
+  .day.missed .date { color: var(--faint); font-weight: 500; }
+  .empty { color: var(--muted); font-size: 15px; padding: 14px 4px; }
+
+  /* Cards */
+  .hint { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+  .card {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    border-left: 6px solid var(--c);
+    box-shadow: 0 6px 20px rgba(43, 37, 64, .06);
+    transition: box-shadow .2s, transform .2s;
+  }
+  .card:focus-within { box-shadow: 0 8px 26px rgba(121, 80, 242, .18); }
+  .card-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; }
+  .card-titles { flex: 1; min-width: 0; }
+  .card-title { font-size: 17px; font-weight: 700; }
+  .card-meta {
+    display: inline-block;
+    width: auto;
+    max-width: 100%;
+    margin-top: 4px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--i);
+    background: var(--t);
+    padding: 2px 10px;
+    border-radius: 999px;
+  }
+  .card-actions { display: flex; gap: 10px; font-size: 14px; opacity: .4; }
+  .card:hover .card-actions, .card:focus-within .card-actions { opacity: 1; }
+  @media (hover: none) { .card-actions { opacity: 1; } }
+  .card-body { font-size: 15px; }
+  .row-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 14px; }
+  .add {
+    color: #fff;
+    font-weight: 600;
+    background: linear-gradient(135deg, #20c997, #51cf66);
+    padding: 7px 16px;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(32, 201, 151, .3);
+  }
+  .add:hover { color: #fff; filter: brightness(1.05); }
+
+  /* Footer */
+  footer {
+    margin-top: 56px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  footer button {
+    background: rgba(255, 255, 255, .8);
+    padding: 6px 14px;
+    border-radius: 999px;
+    color: #1864ab;
+    font-weight: 500;
+  }
+  footer .backup-age { margin-left: auto; }
+  footer .backup-age.old { color: var(--warn); font-weight: 600; }
+  .toast {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, var(--violet), var(--pink));
+    border-radius: 999px;
+    padding: 5px 14px;
+    opacity: 0;
+    transition: opacity .2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="goal-card">
+    <div class="eyebrow">✨ My goal</div>
+    <textarea id="goal" class="goal" rows="1" placeholder="Write your goal…"></textarea>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <nav>
+    <button data-tab="notes">Notes</button>
+    <button data-tab="path">Path</button>
+    <button data-tab="careers">Careers</button>
+  </nav>
+
+  <section id="tab-notes">
+    <div class="today">
+      <div class="today-label"><div id="todayDate"></div><span id="todayNum"></span></div>
+      <textarea id="today" placeholder="What did you really do today?"></textarea>
+    </div>
+    <h2>Previous days</h2>
+    <div id="history"></div>
+  </section>
+
+  <section id="tab-path" hidden>
+    <p class="hint">Click any text to edit. One step per line.</p>
+    <div id="pathList"></div>
+    <div class="row-actions">
+      <button class="add" data-add="path">+ Add phase</button>
+      <button data-reset="path">Reset to suggested</button>
+    </div>
+  </section>
+
+  <section id="tab-careers" hidden>
+    <p class="hint">Career options for you and the path for each. Click any text to edit.</p>
+    <div id="careersList"></div>
+    <div class="row-actions">
+      <button class="add" data-add="careers">+ Add option</button>
+      <button data-reset="careers">Reset to suggested</button>
+    </div>
+  </section>
+
+  <footer>
+    <button id="exportBtn">Export backup</button>
+    <button id="importBtn">Import backup</button>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+    <span class="backup-age" id="backupAge"></span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = 'my-path-v1';
+const TAB_KEY = 'my-path-tab';
+
+const DEFAULT_GOAL = 'Get a software (or analyst) job by April 2027 — and pass every course this semester.';
+
+const DEFAULT_PATH = [
+  { title: 'Daily minimum', meta: 'Every day — no zero days', body:
+`- 1 DSA problem
+- 10 flashcards (Anki)
+- Write today's note here` },
+  { title: 'Now → Nov 10', meta: '60% semester · 40% placement', body:
+`- Fix resume this week, get 2 seniors to review it
+- Give every OA that comes
+- 2–3 DSA problems a day from the core patterns
+- 30 min SQL a day
+- Start the 5 key courses` },
+  { title: 'Nov 11–21 · Endsem', meta: '90% semester', body:
+`- Exams first — do not fail any course
+- Only 1 easy problem + 10 flashcards a day
+- No new topics` },
+  { title: 'Nov 22 → Phase 1', meta: '100% placement · 10–12 hrs a day', body:
+`- Medium problems in the core patterns
+- Revise OS, DBMS, CN, OOPs (revise, don't relearn)
+- Project explanation ready: 2-minute version + deep dive
+- HR answers: tell me about yourself, why low CPI, why this company
+- 3–4 mock interviews with friends
+- Read IITB interview experiences for each shortlisted company` },
+  { title: 'December · Phase 1', meta: 'Interviews', body:
+`- Give everything in each interview
+- After each interview, write the questions asked in today's note` },
+  { title: 'Jan → April · Phase 2 + off-campus', meta: '5–6 hrs a day + courses', body:
+`- Keep doing DSA mediums, re-solve old ones
+- Ship one deployed project with a live link
+- Every week: 10 alumni referral requests, 15–20 applications, 5 founder emails
+- Apply to both SDE and Analyst roles` },
+  { title: 'DSA method', meta: 'So you stop forgetting', body:
+`- Patterns: arrays & hashing, two pointers, sliding window, binary search, stack, linked list, trees, heap, graphs (BFS/DFS, topo sort), basic DP, backtracking, intervals & greedy
+- One list only: NeetCode 150 (Blind-75 subset first)
+- After each problem, write one key-idea line
+- Re-solve after 3 days and after 7 days
+- Stuck 20 min → read solution → solve it yourself next day
+- Target: 80–100 well-revised problems by mid-December` },
+  { title: 'Small gaps', meta: 'Your JEE trick, upgraded', body:
+`- Anki in queues, on walks, before lectures
+- Sticky notes on the mirror: 3 SQL queries or OS concepts, change every Sunday
+- Lock screen: one pattern template, change weekly
+- Before sleep: dry-run one problem in your head
+- While walking: answer interview questions out loud
+- LeetCode + Anki where Instagram / YouTube used to be` },
+  { title: 'Staying consistent', meta: 'Rules', body:
+`- A minimum day beats a zero day
+- Same time slot every day
+- Rejections are normal — count interviews given as wins
+- Check placement groups twice a day, not 50 times
+- Sleep 7 hrs, walk 20 min
+- One accountability friend` },
+];
+
+const DEFAULT_CAREERS = [
+  { title: 'Software Engineer (SDE)', meta: 'Main target', body:
+`Why: CSE from IIT Bombay; most openings on and off campus.
+
+Interviews test:
+- DSA (easy–medium)
+- CS fundamentals: OS, DBMS, CN, OOPs
+- Your project, in depth
+
+Path:
+- Follow the DSA method in the Path tab
+- Revise OS / DBMS / CN / OOPs with Anki
+- One project you can explain deeply (your timetable / endsem app counts)
+- Apply: campus Phase 1 & 2, LinkedIn referrals, company career pages
+- Target: product startups, mid-size product companies, companies with no / low CPI cutoff` },
+  { title: 'Data / Business Analyst', meta: 'Second target', body:
+`Why: little or no hard DSA, prep in weeks, overlaps with SDE prep (SQL, Python).
+
+Interviews test:
+- SQL: joins, group by, window functions
+- Excel: pivot tables, lookups
+- Basic stats: mean / median, probability, A/B testing idea
+- Puzzles and guesstimates
+
+Path (light SQL now, rest after endsem):
+- Week 1–2: SQL — LeetCode SQL 50 / HackerRank SQL
+- Week 2–3: Excel pivots + one small dashboard
+- Week 3: stats basics + 1 guesstimate a day
+- One analysis project: public dataset → 3 questions → short write-up of findings
+- Apply to "Analyst" roles on campus and off campus` },
+  { title: 'SDET / QA Engineer', meta: 'Apply when you see it', body:
+`Why: coding + testing, easier DSA bar. You can move to SDE internally later.
+
+Interviews test:
+- Easy DSA
+- Testing concepts: unit vs integration, writing test cases for a feature
+- Sometimes basics of automation tools
+
+Path:
+- Your SDE prep covers most of it
+- Learn types of testing + how to write test cases
+- Write tests for one of your own projects (1 day)` },
+  { title: 'Support / Solutions / Implementation Engineer', meta: 'Apply when you see it', body:
+`Why: technical + communication, less DSA.
+
+Interviews test:
+- Debugging and scenario questions
+- SQL, how APIs / HTTP work, basic Linux
+- Explaining technical things clearly
+
+Path:
+- SQL (shared with Analyst prep)
+- How HTTP / APIs work, reading logs, basic Linux commands
+- Practice explaining one technical thing simply, out loud` },
+  { title: 'Startups (off-campus)', meta: 'From January', body:
+`Why: they care what you built, not your CPI.
+
+Path:
+- Ship one deployed project with a live link
+- Clean GitHub + LinkedIn
+- Apply on Wellfound and LinkedIn
+- Email founders: 4 lines + link to what you built
+- Ask IITB alumni at startups for referrals` },
+  { title: 'IT services', meta: 'Safety net', body:
+`TCS, Infosys, Accenture, Wipro, Capgemini, etc.
+
+Why: low bar, large hiring, you can switch after a year.
+
+Interviews test:
+- Aptitude, easy coding, basics
+
+Path:
+- Don't spend separate prep time — SDE prep covers it
+- Apply through their off-campus hiring if Phase 2 doesn't work out` },
+  { title: 'Not now', meta: 'Skip this season', body:
+`- Consulting, product management, marketing: need months of case / product practice
+- Revisit after 1–2 years of work if interested
+- GATE / PSU or MS: only if you choose a longer path later` },
+];
+
+// Card colours: c = stripe, t = tint, i = ink
+const PALETTE = [
+  { c: '#ff6b6b', t: '#ffe3e3', i: '#c92a2a' },
+  { c: '#ff922b', t: '#fff0db', i: '#d9480f' },
+  { c: '#fcc419', t: '#fff7d1', i: '#946c00' },
+  { c: '#51cf66', t: '#e3f9e5', i: '#2b8a3e' },
+  { c: '#20c997', t: '#dcfaf0', i: '#087f5b' },
+  { c: '#4dabf7', t: '#e0f0ff', i: '#1864ab' },
+  { c: '#9775fa', t: '#efe9ff', i: '#5f3dc4' },
+  { c: '#f06595', t: '#ffe3ee', i: '#a61e4d' },
+];
+function paint(el, i) {
+  const p = PALETTE[i % PALETTE.length];
+  el.style.setProperty('--c', p.c);
+  el.style.setProperty('--t', p.t);
+  el.style.setProperty('--i', p.i);
+}
+
+const uid = () => Math.random().toString(36).slice(2, 9);
+const withIds = list => list.map(c => ({ id: uid(), ...c }));
+
+function dayKey(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function parseKey(k) {
+  const [y, m, d] = k.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+function daysBetween(a, b) {
+  return Math.round((parseKey(b) - parseKey(a)) / 86400000);
+}
+function shiftKey(k, n) {
+  const d = parseKey(k);
+  d.setDate(d.getDate() + n);
+  return dayKey(d);
+}
+function prettyDate(k) {
+  return parseKey(k).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function normalize(s) {
+  s = s && typeof s === 'object' ? s : {};
+  const out = {
+    goal: typeof s.goal === 'string' ? s.goal : DEFAULT_GOAL,
+    start: typeof s.start === 'string' ? s.start : dayKey(),
+    notes: s.notes && typeof s.notes === 'object' ? s.notes : {},
+    path: Array.isArray(s.path) ? s.path : withIds(DEFAULT_PATH),
+    careers: Array.isArray(s.careers) ? s.careers : withIds(DEFAULT_CAREERS),
+    lastBackup: s.lastBackup || null,
+  };
+  // The journey starts at the earliest note, so imported notes always show up
+  for (const k of Object.keys(out.notes)) if (k < out.start) out.start = k;
+  return out;
+}
+
+function load() {
+  try { return normalize(JSON.parse(localStorage.getItem(KEY))); }
+  catch { return normalize(null); }
+}
+
+let state = load();
+let currentDay = dayKey();
+let saveTimer;
+
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, 300);
+}
+function saveNow() {
+  clearTimeout(saveTimer);
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+    toast('Saved');
+  } catch {
+    toast('Could not save — export a backup');
+  }
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 900);
+}
+
+function autosize(t) {
+  t.style.height = 'auto';
+  t.style.height = t.scrollHeight + 'px';
+}
+function sizeAll(root = document) {
+  root.querySelectorAll('textarea').forEach(autosize);
+}
+function bindArea(t, onInput) {
+  t.addEventListener('input', () => { autosize(t); onInput(t.value); save(); });
+}
+
+function setNote(k, text) {
+  if (text.trim()) state.notes[k] = text;
+  else delete state.notes[k];
+}
+
+/* ---------- Stats ---------- */
+function renderStats() {
+  const today = currentDay;
+  const dayNum = daysBetween(state.start, today) + 1;
+  const written = Object.keys(state.notes).length;
+  let streak = 0;
+  let k = state.notes[today] ? today : shiftKey(today, -1);
+  while (state.notes[k]) { streak++; k = shiftKey(k, -1); }
+  document.getElementById('stats').innerHTML =
+    `<span class="pill p-day">📅 Day <b>${dayNum}</b></span>` +
+    `<span class="pill p-streak">🔥 Streak <b>${streak}</b></span>` +
+    `<span class="pill p-written">✍️ <b>${written}</b> ${written === 1 ? 'day' : 'days'} written</span>`;
+  document.getElementById('todayNum').textContent = `Day ${dayNum}`;
+}
+
+/* ---------- Notes ---------- */
+function renderNotes() {
+  document.getElementById('todayDate').textContent = 'Today · ' + prettyDate(currentDay);
+  const todayArea = document.getElementById('today');
+  todayArea.value = state.notes[currentDay] || '';
+
+  const hist = document.getElementById('history');
+  hist.replaceChildren();
+  const days = daysBetween(state.start, currentDay);
+  if (days <= 0) {
+    const p = document.createElement('div');
+    p.className = 'empty';
+    p.textContent = 'Your previous days will show up here.';
+    hist.append(p);
+    return;
+  }
+  for (let i = 1; i <= days; i++) {
+    const k = shiftKey(currentDay, -i);
+    const text = state.notes[k] || '';
+    const row = document.createElement('div');
+    row.className = 'day' + (text ? '' : ' missed');
+    paint(row, i - 1);
+    const head = document.createElement('div');
+    head.className = 'day-head';
+    const date = document.createElement('span');
+    date.className = 'date';
+    date.textContent = prettyDate(k);
+    const num = document.createElement('span');
+    num.className = 'num';
+    num.textContent = 'Day ' + (daysBetween(state.start, k) + 1);
+    head.append(date, num);
+    const t = document.createElement('textarea');
+    t.rows = 1;
+    t.placeholder = 'No note this day';
+    t.value = text;
+    bindArea(t, v => {
+      setNote(k, v);
+      row.classList.toggle('missed', !v.trim());
+      renderStats();
+    });
+    row.append(head, t);
+    hist.append(row);
+  }
+}
+
+/* ---------- Cards (Path + Careers) ---------- */
+function renderCards(name) {
+  const list = state[name];
+  const box = document.getElementById(name + 'List');
+  box.replaceChildren();
+  list.forEach((item, i) => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    paint(card, i);
+
+    const head = document.createElement('div');
+    head.className = 'card-head';
+    const titles = document.createElement('div');
+    titles.className = 'card-titles';
+    const title = document.createElement('input');
+    title.className = 'card-title';
+    title.placeholder = 'Title';
+    title.value = item.title;
+    title.addEventListener('input', () => { item.title = title.value; save(); });
+    const meta = document.createElement('input');
+    meta.className = 'card-meta';
+    meta.placeholder = name === 'path' ? 'When / focus' : 'Tag';
+    meta.value = item.meta;
+    const fitMeta = () => { meta.size = Math.max(meta.value.length, meta.placeholder.length, 4); };
+    fitMeta();
+    meta.addEventListener('input', () => { item.meta = meta.value; fitMeta(); save(); });
+    titles.append(title, meta);
+
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+    const up = button('↑', 'Move up', () => move(name, i, -1));
+    const down = button('↓', 'Move down', () => move(name, i, 1));
+    const del = button('✕', 'Remove', () => {
+      if (!confirm(`Remove "${item.title || 'this card'}"?`)) return;
+      list.splice(i, 1);
+      saveNow();
+      renderCards(name);
+    });
+    if (i === 0) up.style.visibility = 'hidden';
+    if (i === list.length - 1) down.style.visibility = 'hidden';
+    actions.append(up, down, del);
+    head.append(titles, actions);
+
+    const body = document.createElement('textarea');
+    body.className = 'card-body';
+    body.rows = 2;
+    body.placeholder = 'Steps, one per line…';
+    body.value = item.body;
+    bindArea(body, v => { item.body = v; });
+
+    card.append(head, body);
+    box.append(card);
+  });
+  sizeAll(box);
+}
+
+function button(label, title, onClick) {
+  const b = document.createElement('button');
+  b.textContent = label;
+  b.title = title;
+  b.setAttribute('aria-label', title);
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+function move(name, i, dir) {
+  const list = state[name];
+  [list[i], list[i + dir]] = [list[i + dir], list[i]];
+  saveNow();
+  renderCards(name);
+}
+
+/* ---------- Backup ---------- */
+function renderBackupAge() {
+  const el = document.getElementById('backupAge');
+  if (!state.lastBackup) {
+    el.textContent = 'Never backed up';
+    el.classList.add('old');
+    return;
+  }
+  const d = daysBetween(state.lastBackup, currentDay);
+  el.textContent = 'Last backup: ' + (d <= 0 ? 'today' : d === 1 ? 'yesterday' : d + ' days ago');
+  el.classList.toggle('old', d > 7);
+}
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  state.lastBackup = currentDay;
+  saveNow();
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `my-path-backup-${currentDay}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  renderBackupAge();
+});
+
+document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!data || typeof data.notes !== 'object') throw new Error();
+    if (!confirm('Replace everything here with this backup?')) return;
+    state = normalize(data);
+    saveNow();
+    renderAll();
+  } catch {
+    alert('That file is not a valid backup.');
+  }
+});
+
+/* ---------- Tabs ---------- */
+function showTab(tab) {
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('section').forEach(s => { s.hidden = s.id !== 'tab-' + tab; });
+  try { localStorage.setItem(TAB_KEY, tab); } catch {}
+  sizeAll(document.getElementById('tab-' + tab));
+}
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+
+document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+  const name = b.dataset.add;
+  state[name].push({ id: uid(), title: '', meta: '', body: '' });
+  saveNow();
+  renderCards(name);
+  const titles = document.querySelectorAll(`#${name}List .card-title`);
+  titles[titles.length - 1].focus();
+}));
+
+document.querySelectorAll('[data-reset]').forEach(b => b.addEventListener('click', () => {
+  const name = b.dataset.reset;
+  if (!confirm('Replace your edits on this tab with the suggested version?')) return;
+  state[name] = withIds(name === 'path' ? DEFAULT_PATH : DEFAULT_CAREERS);
+  saveNow();
+  renderCards(name);
+}));
+
+/* ---------- Wiring ---------- */
+const goal = document.getElementById('goal');
+bindArea(goal, v => { state.goal = v; });
+bindArea(document.getElementById('today'), v => { setNote(currentDay, v); renderStats(); });
+
+function renderAll() {
+  goal.value = state.goal;
+  renderStats();
+  renderNotes();
+  renderCards('path');
+  renderCards('careers');
+  renderBackupAge();
+  sizeAll();
+}
+
+// If the page stays open past midnight, roll over to the new day
+function checkDay() {
+  if (dayKey() !== currentDay) {
+    saveNow();
+    currentDay = dayKey();
+    renderAll();
+  }
+}
+document.addEventListener('visibilitychange', checkDay);
+window.addEventListener('focus', checkDay);
+setInterval(checkDay, 60000);
+window.addEventListener('resize', () => sizeAll());
+window.addEventListener('beforeunload', () => { if (saveTimer) saveNow(); });
+
+renderAll();
+let startTab = 'notes';
+try { startTab = localStorage.getItem(TAB_KEY) || 'notes'; } catch {}
+showTab(['notes', 'path', 'careers'].includes(startTab) ? startTab : 'notes');
+try { if (!localStorage.getItem(KEY)) saveNow(); } catch {}
+
+// Offline + installable when served over http(s); opening the file directly still works without it
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
