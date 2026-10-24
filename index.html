@@ -229,6 +229,44 @@
     pointer-events: none;
   }
   .toast.show { opacity: 1; }
+
+  /* Install pop-up (browser only) */
+  .ipop {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px 16px calc(env(safe-area-inset-bottom) + 16px);
+    background: rgba(43, 37, 64, .3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s;
+  }
+  .ipop.open { opacity: 1; pointer-events: auto; }
+  .ipcard {
+    width: 100%;
+    max-width: 400px;
+    background: var(--surface);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: 0 24px 48px -20px rgba(121, 80, 242, .45);
+    transform: translateY(24px);
+    transition: transform .35s;
+  }
+  .ipop.open .ipcard { transform: none; }
+  .iphead { display: flex; align-items: center; gap: 13px; }
+  .iphead img { width: 52px; height: 52px; border-radius: 13px; flex-shrink: 0; }
+  .ipt { font-size: 17px; font-weight: 700; }
+  .ips { font-size: 13px; color: var(--muted); margin-top: 2px; line-height: 1.45; }
+  .ipdots { display: flex; gap: 5px; margin: 14px 0 14px 2px; }
+  .ipdots i { width: 22px; height: 4px; border-radius: 99px; }
+  .ipbtns { display: flex; gap: 9px; }
+  .ipbtns button { flex: 1; padding: 10px 0; border-radius: 999px; font-weight: 600; }
+  #ipNo { background: #f3effa; color: var(--muted); }
+  #ipYes { color: #fff; background: linear-gradient(135deg, var(--violet), var(--pink)); box-shadow: 0 4px 12px rgba(121, 80, 242, .3); }
+  @media (min-width: 720px) { .ipop { align-items: center; } }
 </style>
 </head>
 <body>
@@ -280,6 +318,25 @@
   </footer>
 </div>
 <div class="toast" id="toast"></div>
+
+<div class="ipop" id="ipop" role="dialog" aria-modal="true" aria-labelledby="ipT" hidden>
+  <div class="ipcard">
+    <div class="iphead">
+      <img src="icons/icon-192.png" alt="">
+      <div>
+        <div class="ipt" id="ipT">Install My Path</div>
+        <div class="ips">Get it on your home screen. Opens like an app and works offline.</div>
+      </div>
+    </div>
+    <div class="ipdots" aria-hidden="true">
+      <i style="background:#ff922b"></i><i style="background:#f06595"></i><i style="background:#9775fa"></i><i style="background:#20c997"></i>
+    </div>
+    <div class="ipbtns">
+      <button id="ipNo">Not now</button>
+      <button id="ipYes">Install</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const KEY = 'my-path-v1';
@@ -757,6 +814,42 @@ let startTab = 'notes';
 try { startTab = localStorage.getItem(TAB_KEY) || 'notes'; } catch {}
 showTab(['notes', 'path', 'careers'].includes(startTab) ? startTab : 'notes');
 try { if (!localStorage.getItem(KEY)) saveNow(); } catch {}
+
+/* ---------- Install pop-up ----------
+   Chrome fires beforeinstallprompt only in the browser, never inside the
+   installed app, so the pop-up shows on the website alone.
+   "Not now" keeps it away for the rest of that browser session. */
+const ASKED_KEY = 'my-path.installAsked';
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const ipop = document.getElementById('ipop');
+let installEvt = null;
+
+function showInstall() {
+  ipop.hidden = false;
+  setTimeout(() => ipop.classList.add('open'), 30);
+}
+function hideInstall() {
+  ipop.classList.remove('open');
+  setTimeout(() => { ipop.hidden = true; }, 320);
+  try { sessionStorage.setItem(ASKED_KEY, '1'); } catch {}
+}
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installEvt = e;
+  let asked = false;
+  try { asked = sessionStorage.getItem(ASKED_KEY) === '1'; } catch {}
+  if (!standalone && !asked) setTimeout(showInstall, 700);
+});
+document.getElementById('ipYes').addEventListener('click', async () => {
+  hideInstall();
+  if (!installEvt) return;
+  installEvt.prompt();
+  await installEvt.userChoice.catch(() => {});
+  installEvt = null;
+});
+document.getElementById('ipNo').addEventListener('click', hideInstall);
+ipop.addEventListener('click', e => { if (e.target === ipop) hideInstall(); });
+window.addEventListener('appinstalled', () => { hideInstall(); toast('Installed'); });
 
 // Offline + installable when served over http(s); opening the file directly still works without it
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

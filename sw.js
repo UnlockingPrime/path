@@ -3,7 +3,7 @@
  * Bump VERSION whenever you change any file, so phones pick up the new build.
  */
 const PREFIX = "my-path-";
-const VERSION = PREFIX + "v2";
+const VERSION = PREFIX + "v3";
 const CORE = [
   "./",
   "./index.html",
