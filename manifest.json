@@ -2,7 +2,7 @@
   "id": "/path/",
   "name": "My Path",
   "short_name": "My Path",
-  "description": "Daily notes, my placement path and career options, in one place.",
+  "description": "Daily notes, my placement path, career options and company tracker, in one place.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

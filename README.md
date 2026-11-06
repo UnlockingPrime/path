@@ -10,6 +10,7 @@ My personal placement tracker: one goal, a daily note, my roadmap and my career 
 - **Notes.** A blank note for today, plus every previous day since I started. Days I skipped show up greyed out.
 - **Path.** My roadmap by phase (semester, endsem, Phase 1, Phase 2) plus my DSA method and daily rules. Everything is editable.
 - **Careers.** Career options that fit me, with what each interview tests and my path for it. Everything is editable.
+- **Companies.** Every company I applied to during placement season: role, job code, priority (High / Medium / Low) and status (Not applied, Applied, Disqualified, Offer). Each company gets its own rounds (OA, technical, personal, HR, GD or any custom one), each with an optional date and time that I fill in once it's announced. I tick rounds as I finish them. A **Coming up** box lists every dated round, soonest first, plus the companies whose date isn't out yet. Search and filters (In process, High priority, Offers, Disqualified) keep a long list manageable.
 - **Backup.** Export to a JSON file and import it back.
 
 Notes are saved in the browser on each device and are never uploaded. Laptop and phone don't sync, so use export/import to move notes between them.
